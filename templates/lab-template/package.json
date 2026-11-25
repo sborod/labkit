@@ -16,7 +16,7 @@
     "verify": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
-    "labkit": "github:sborod/labkit#15dae831f590f371a7ed2da50735afd0703e8fd7"
+    "labkit": "https://github.com/sborod/labkit/releases/download/v0.1.1/labkit-0.1.1.tgz"
   },
   "devDependencies": {
     "@types/node": "24.19.2",
