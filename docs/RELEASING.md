@@ -8,8 +8,7 @@ patch releases preserve compatibility; incompatible public API changes require
 a new minor version and migration notes. Compatible features may also use a new
 minor version. After 1.0, normal SemVer major/minor/patch rules apply.
 Do not move a released tag or replace its archive; publish a new patch instead.
-The recreated public repository starts with v0.1.1; older private commit IDs and
-tags are not valid installation references here.
+The first publicly available release is v0.1.1. Use published release URLs or valid Git tags.
 
 `CONTRACT_VERSION` (currently `"0.1"`) describes the runtime definition contract,
 not the package build. Change it only when the contract is incompatible.
