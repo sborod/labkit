@@ -8,6 +8,8 @@ patch releases preserve compatibility; incompatible public API changes require
 a new minor version and migration notes. Compatible features may also use a new
 minor version. After 1.0, normal SemVer major/minor/patch rules apply.
 Do not move a released tag or replace its archive; publish a new patch instead.
+The recreated public repository starts with v0.1.1; older private commit IDs and
+tags are not valid installation references here.
 
 `CONTRACT_VERSION` (currently `"0.1"`) describes the runtime definition contract,
 not the package build. Change it only when the contract is incompatible.
@@ -15,45 +17,41 @@ Applications should import this constant from their installed SDK.
 
 ## Consumer installation
 
-LabKit's repository is private. GitHub authentication is required; do not put
-tokens in package.json, package-lock.json, or Git URLs committed to a repository.
+LabKit is hosted in a public GitHub repository. HTTPS Git installation requires
+no deploy key, token or GitHub login. Do not commit credentials.
 
 ### Recommended: Git tag
 
-With a GitHub SSH key authorized to read LabKit:
+From the lab root:
 
 ```sh
-npm install --save-exact 'git+ssh://git@github.com/sborod/labkit.git#v0.1.0'
+npm install --save-exact 'git+https://github.com/sborod/labkit.git#v0.1.1'
 ```
 
-Or use an authenticated HTTPS Git credential helper and
-`git+https://github.com/sborod/labkit.git#v0.1.0`. npm resolves the tag to a commit
+npm resolves the tag to a commit
 in the lockfile and builds the package using its prepare lifecycle. The same
 hook builds the SDK on npm ci in the SDK repository.
 Use the SDK's declared Node version and allow dependency build scripts.
 Commit package.json and package-lock.json; subsequent installs use `npm ci`.
 A full commit SHA can be used instead of a tag when testing an unreleased change.
 
-For private cross-repository CI, configure a read-only deploy key for LabKit or
-a narrowly scoped GitHub App/token via a credential helper. The consumer repo's
-default GITHUB_TOKEN does not grant access to LabKit. Keep credentials out of logs.
-Use the same Git transport locally and in CI.
+Public HTTPS works for both private and public consumer repositories in CI;
+no cross-repository secret is required.
 
 ### Alternative: prebuilt GitHub Release archive
 
-With authenticated GitHub CLI, from the lab root:
+From the lab root:
 
 ```sh
 mkdir -p vendor
-gh release download v0.1.0 --repo sborod/labkit --pattern 'labkit-0.1.0.tgz*' --dir vendor
-(cd vendor && sha256sum -c labkit-0.1.0.tgz.sha256)
-npm install --save-exact ./vendor/labkit-0.1.0.tgz
+curl -fL -o vendor/labkit-0.1.1.tgz https://github.com/sborod/labkit/releases/download/v0.1.1/labkit-0.1.1.tgz
+curl -fL -o vendor/labkit-0.1.1.tgz.sha256 https://github.com/sborod/labkit/releases/download/v0.1.1/labkit-0.1.1.tgz.sha256
+(cd vendor && sha256sum -c labkit-0.1.1.tgz.sha256)
+npm install --save-exact ./vendor/labkit-0.1.1.tgz
 ```
 
-On macOS use `shasum -a 256 -c` instead. Commit the lockfile and either the archive
-(if your lab repository may contain the SDK) or arrange for the same archive
-to be fetched into vendor before npm ci. Do not commit a private SDK archive to
-a public lab. Direct unauthenticated release URLs do not work for private repos.
+On macOS use `shasum -a 256 -c` instead. Commit the lockfile and either the archive or arrange for the same archive
+to be fetched into vendor before npm ci.
 This route needs no SDK build or SDK development dependencies in the consumer.
 
 ### Local SDK development

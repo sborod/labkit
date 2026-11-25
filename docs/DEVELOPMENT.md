@@ -50,13 +50,13 @@ To reproduce CI consumer checks after building:
 
 ```sh
 npm pack --ignore-scripts
-npm run test:consumer -- "$PWD/labkit-0.1.0.tgz"
-node scripts/test-template.mjs "$PWD/labkit-0.1.0.tgz"
+npm run test:consumer -- "$PWD/labkit-0.1.1.tgz"
+node scripts/test-template.mjs "$PWD/labkit-0.1.1.tgz"
 ```
 
 Use the actual package version in the archive name. The template smoke test
 copies the template into a temporary directory and substitutes the candidate
-archive; its checked-in Git tag and commit are validated separately.
+archive; its checked-in Git pin and commit are validated separately.
 The Git smoke test uses a local Git URL pointing at a committed revision, not
 uncommitted changes.
 

@@ -5,7 +5,7 @@ instruments. It supplies a per-instance runtime, declarative controls and layout
 canvas plotting, PCM and AudioWorklet audio, and Web MIDI. Mathematical models,
 DSP, musical transport and file formats belong to individual labs.
 
-LabKit is private and ESM-only. Releases are distributed through
+LabKit is publicly available on GitHub and ESM-only. Releases are distributed through
 [GitHub Releases](https://github.com/sborod/labkit/releases), not the npm registry.
 
 ## Create a laboratory
@@ -19,19 +19,19 @@ npm ci
 npm run dev
 ```
 
-Requires Node.js 24.15.0 and GitHub SSH read access. The template includes a
+Requires Node.js 24.15.0 and Git. The template includes a
 knob, readout, reset action, optional MIDI-learn, tests, and agent instructions.
 Follow the [template guide](templates/lab-template/README.md) to rename it.
 
 ## Add LabKit to an existing project
 
 ```sh
-npm install --save-exact 'git+ssh://git@github.com/sborod/labkit.git#v0.1.0'
+npm install --save-exact 'git+https://github.com/sborod/labkit.git#v0.1.1'
 ```
 
 Commit both npm manifests. The Git installation builds the SDK automatically;
 the alternative release archive is already built. See
-[installation and releases](docs/RELEASING.md) for credentials and updates.
+[installation and releases](docs/RELEASING.md) for installation and updates.
 
 ## Public API
 
@@ -54,7 +54,7 @@ mount and dispose a lab using the public API.
   capabilities, errors and lifetime.
 - [Development and verification](docs/DEVELOPMENT.md): repository structure,
   lint, formatting, tests and CI.
-- [Installation and releases](docs/RELEASING.md): version policy, private Git,
+- [Installation and releases](docs/RELEASING.md): version policy, public Git,
   archives and local SDK development.
 - [Audio](src/audio/README.md): PCM and AudioWorklet integration.
 - [MIDI](src/midi/README.md): mapping, event streams, persistence and UI.
