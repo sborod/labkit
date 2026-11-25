@@ -28,7 +28,8 @@ try {
   const lock = await json(lockPath);
   const pin = pkg.dependencies.labkit;
   assert.equal(lock.packages[""].dependencies.labkit, pin);
-  const match = /^git\+https:\/\/github\.com\/sborod\/labkit\.git#(v\d+\.\d+\.\d+|[a-f0-9]{40})$/.exec(pin);
+  const match =
+    /^git\+https:\/\/github\.com\/sborod\/labkit\.git#(v\d+\.\d+\.\d+|[a-f0-9]{40})$/.exec(pin);
   assert.ok(match, "template must use a fixed public tag or commit");
   const sha = execFileSync("git", ["rev-parse", match[1] + "^{commit}"], {
     cwd: sdk,

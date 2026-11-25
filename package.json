@@ -1,6 +1,6 @@
 {
   "name": "labkit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "LabKit SDK: generic runtime, UI, audio and MIDI building blocks for browser laboratories",
