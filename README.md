@@ -26,11 +26,11 @@ Follow the [template guide](templates/lab-template/README.md) to rename it.
 ## Add LabKit to an existing project
 
 ```sh
-npm install --save-exact 'git+https://github.com/sborod/labkit.git#v0.1.1'
+npm install --save-exact https://github.com/sborod/labkit/releases/download/v0.1.1/labkit-0.1.1.tgz
 ```
 
-Commit both npm manifests. The Git installation builds the SDK automatically;
-the alternative release archive is already built. See
+Commit both npm manifests. The public release archive is already built and npm records its integrity.
+Git installation is also supported and builds the SDK automatically. See
 [installation and releases](docs/RELEASING.md) for installation and updates.
 
 ## Public API

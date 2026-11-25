@@ -20,7 +20,7 @@ Applications should import this constant from their installed SDK.
 LabKit is hosted in a public GitHub repository. HTTPS Git installation requires
 no deploy key, token or GitHub login. Do not commit credentials.
 
-### Recommended: Git tag
+### Alternative: Git tag
 
 From the lab root:
 
@@ -38,9 +38,16 @@ A full commit SHA can be used instead of a tag when testing an unreleased change
 Public HTTPS works for both private and public consumer repositories in CI;
 no cross-repository secret is required.
 
-### Alternative: prebuilt GitHub Release archive
+### Recommended: prebuilt GitHub Release archive
 
-From the lab root:
+Install the public release directly from the lab root:
+
+```sh
+npm install --save-exact https://github.com/sborod/labkit/releases/download/v0.1.1/labkit-0.1.1.tgz
+```
+
+Commit both npm manifests. npm records the archive URL and integrity hash.
+For a separate local copy and explicit SHA-256 verification:
 
 ```sh
 mkdir -p vendor
