@@ -2,7 +2,7 @@
 
 A standalone starting point for a browser lab using LabKit. It includes a knob,
 a readout, a reset action, optional MIDI-learn and tests. Audio is not started
-or required. The dependency is pinned to the initial public LabKit commit.
+or required. The dependency is pinned to the public LabKit v0.1.1 release archive.
 
 ## Start
 
@@ -16,7 +16,7 @@ npm ci
 npm run dev
 ```
 
-Requires Node.js 24.15.0 and Git. The public `sborod/labkit` repository requires no credentials. The SDK builds automatically during npm installation.
+Requires Node.js 24.15.0 and Git. The public `sborod/labkit` repository requires no credentials. The SDK is prebuilt and npm verifies the archive integrity.
 No sibling SDK directory is needed. To use MIDI, open the Vite localhost page
 in a browser with Web MIDI support and connect through the SDK's MIDI panel.
 
