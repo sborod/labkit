@@ -28,15 +28,35 @@ try {
   const lock = await json(lockPath);
   const pin = pkg.dependencies.labkit;
   assert.equal(lock.packages[""].dependencies.labkit, pin);
-  const match = /^git\+ssh:\/\/git@github\.com\/sborod\/labkit\.git#(v\d+\.\d+\.\d+)$/.exec(pin);
-  assert.ok(match, "template must use a fixed release tag");
-  const sha = execFileSync("git", ["rev-parse", match[1] + "^{commit}"], {
-    cwd: sdk,
-    encoding: "utf8",
-  }).trim();
-  assert.equal(lock.packages["node_modules/labkit"].resolved, pin.split("#")[0] + "#" + sha);
+  const entry = lock.packages["node_modules/labkit"];
+  const release =
+    /^https:\/\/github\.com\/sborod\/labkit\/releases\/download\/v(\d+\.\d+\.\d+)\/labkit-\1\.tgz$/.exec(
+      pin,
+    );
+  if (release) {
+    assert.equal(entry.version, release[1]);
+    assert.equal(entry.resolved, pin);
+    assert.ok(entry.integrity, "release archive must have lockfile integrity");
+  } else {
+    const match =
+      /^(?:github:sborod\/labkit|git\+https:\/\/github\.com\/sborod\/labkit\.git)#(v\d+\.\d+\.\d+|[a-f0-9]{40})$/.exec(
+        pin,
+      );
+    assert.ok(match, "template must use a fixed public release or commit");
+    const sha = execFileSync("git", ["rev-parse", match[1] + "^{commit}"], {
+      cwd: sdk,
+      encoding: "utf8",
+    }).trim();
+    assert.ok(
+      [
+        "git+https://github.com/sborod/labkit.git#" + sha,
+        "git+ssh://git@github.com/sborod/labkit.git#" + sha,
+      ].includes(entry.resolved),
+      "template lockfile must resolve to the pinned commit",
+    );
+  }
 
-  // Test the current candidate, without mutating the template or needing SSH.
+  // Test the current candidate, without mutating the template.
   const sdkPkg = await json(join(sdk, "package.json"));
   const local = "file:" + resolve(archive);
   pkg.dependencies.labkit = local;
