@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.test-fixtures-dist/
+coverage/
+playwright-report/
+blob-report/
+test-results/
+.vite/
+*.tsbuildinfo
+.DS_Store
+issues/
+
+/labkit-*.tgz
+/release/

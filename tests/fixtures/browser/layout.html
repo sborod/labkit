@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LabKit instrument layout</title>
+    <style>
+      body {
+        margin: 0;
+        background: var(--labkit-page-bg);
+      }
+      /* Специально проверяет навигацию: offsetTop секции больше не годится. */
+      .layout-section--plot {
+        position: relative;
+        padding-top: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./layout.ts"></script>
+  </body>
+</html>

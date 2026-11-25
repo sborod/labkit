@@ -1,0 +1,116 @@
+name: Verify and release
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24.15.0"
+          cache: npm
+      - name: Validate version and release tag
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          node -e 'const p=require("./package.json"), l=require("./package-lock.json"); if (l.version !== p.version || l.packages[""].version !== p.version) process.exit(1)'
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            test "$GITHUB_REF_NAME" = "v$version"
+            git merge-base --is-ancestor HEAD origin/main
+          fi
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run verify
+      - name: Pack and verify external consumer
+        shell: bash
+        run: |
+          mkdir -p release
+          npm pack --ignore-scripts --pack-destination release
+          version=$(node -p "require('./package.json').version")
+          archive="labkit-$version.tgz"
+          npm run test:consumer -- "$PWD/release/$archive"
+          (cd release && sha256sum "$archive" > "$archive.sha256")
+      - name: Verify standalone lab template
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          node scripts/test-template.mjs "$PWD/release/labkit-$version.tgz"
+      - name: Verify Git installation
+        shell: bash
+        run: |
+          npm run test:consumer -- --git "git+file://$PWD#$(git rev-parse HEAD)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: labkit-package
+          path: release/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+
+  release:
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    needs: verify
+    concurrency:
+      group: labkit-release
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: labkit-package
+          path: release
+      - name: Publish verified archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          archives=(release/labkit-*.tgz)
+          test "${#archives[@]}" = 1
+          archive=$(basename "${archives[0]}")
+          version="${archive#labkit-}"
+          version="${version%.tgz}"
+          tag="v$version"
+          (cd release && sha256sum -c "$archive.sha256")
+          if [[ "$GITHUB_REF" == refs/heads/main ]]; then
+            current=$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)
+            if [[ "$current" != "$GITHUB_SHA" ]]; then
+              echo "Superseded main run; skipping release."
+              exit 0
+            fi
+          fi
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "$tag is already released; leaving it unchanged."
+            exit 0
+          fi
+          # An existing tag must identify the exact verified commit.
+          if tagged=$(gh api "repos/$GH_REPO/commits/$tag" --jq .sha 2>/dev/null); then
+            test "$tagged" = "$GITHUB_SHA"
+            gh release create "$tag" "release/$archive" "release/$archive.sha256" --verify-tag --title "LabKit $version" --generate-notes
+          else
+            test "$GITHUB_REF" = refs/heads/main
+            gh release create "$tag" "release/$archive" "release/$archive.sha256" --target "$GITHUB_SHA" --title "LabKit $version" --generate-notes
+          fi

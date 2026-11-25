@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "rootDir": "src",
+    "outDir": "dist/types",
+    "types": [],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "sourceMap": false,
+    "declarationMap": false,
+    "inlineSourceMap": false,
+    "inlineSources": false
+  },
+  "include": ["src/index.ts", "src/testing.ts"],
+  "exclude": ["dist", "node_modules"]
+}
