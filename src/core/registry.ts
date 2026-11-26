@@ -244,8 +244,7 @@ export class ParameterRegistry<S> {
       }
     }
     if (failed && flushFailed) {
-      // Ошибку callback нельзя замаскировать ошибкой доставки: сохраняем
-      // original как cause и первым в AggregateError.
+      // Preserve the callback failure as the cause and first error in AggregateError.
       const errors: unknown[] = [failure];
       if (flushFailure instanceof AggregateError) {
         errors.push(...flushFailure.errors);

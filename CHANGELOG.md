@@ -5,10 +5,8 @@
 First release from the recreated public repository. Runtime contract remains 0.1.
 
 - Use public HTTPS installation without deploy keys.
-
 - Adopt ESLint and Prettier and enforce both in CI.
 - Reorganize documentation and remove obsolete implementation-history commentary.
-
 - Add a standalone laboratory template with a pinned SDK, MIDI-learn, tests and agent instructions.
 - Verify the template in CI against the candidate SDK archive.
 
